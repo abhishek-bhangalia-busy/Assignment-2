@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 var inp string = `{
@@ -36,42 +37,30 @@ var inp string = `{
 "int_text" : [1,3,4]
 }`
 
-func getMapItemTypes(mp map[string]interface{}) {
-	fmt.Println("\nMap item types :")
-	for k, v := range mp {
-		rObjTyp := reflect.TypeOf(v)
+func printSliceItems(s []interface{}) {
+	for i, v := range s {
+
 		rObjVal := reflect.ValueOf(v)
+		checkNestedTypes(rObjVal, strconv.Itoa(i))
+	}
+}
+
+func checkNestedTypes(rObjVal reflect.Value, k string) {
+	switch rObjVal.Kind() {
+	case reflect.Map:
+		printJSON(rObjVal.Interface().(map[string]interface{}))
+	case reflect.Slice:
+		printSliceItems(rObjVal.Interface().([]interface{}))
+	default:
+		rObjTyp := reflect.TypeOf(rObjVal.Interface())
 		fmt.Printf("key : %v, value : %v, type : %v, kind : %v\n", k, rObjVal, rObjTyp, rObjVal.Kind())
-		checkNestedTypes(rObjTyp, rObjVal, v)
 	}
 }
 
-func checkNestedTypes(rObjTyp reflect.Type, rObjVal reflect.Value, v interface{}) {
-	if rObjTyp.String() != rObjVal.Kind().String() {
-
-		switch rObjVal.Kind().String() {
-
-		case "slice":
-			if v, ok := v.([]interface{}); ok {
-				getSliceItemTypes(v)
-			}
-
-		case "map":
-			if v, ok := v.(map[string]interface{}); ok {
-				getMapItemTypes(v)
-			}
-
-		}
-	}
-}
-
-func getSliceItemTypes(s []interface{}) {
-	fmt.Println("\nSlice Item Types :")
-	for _, v := range s {
-		rObjTyp := reflect.TypeOf(v)
+func printJSON(mp map[string]interface{}) {
+	for k, v := range mp {
 		rObjVal := reflect.ValueOf(v)
-		fmt.Printf("value : %v, type : %v, kind : %v\n", rObjVal, rObjTyp, rObjVal.Kind())
-		checkNestedTypes(rObjTyp, rObjVal, v)
+		checkNestedTypes(rObjVal, k)
 	}
 }
 
@@ -83,5 +72,5 @@ func main() {
 		panic(err)
 	}
 
-	getMapItemTypes(mp)
+	printJSON(mp)
 }
