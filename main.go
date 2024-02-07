@@ -39,7 +39,6 @@ var inp string = `{
 
 func printSliceItems(s []interface{}) {
 	for i, v := range s {
-
 		rObjVal := reflect.ValueOf(v)
 		checkNestedTypes(rObjVal, strconv.Itoa(i))
 	}
