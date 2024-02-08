@@ -6,15 +6,15 @@ import (
 	"reflect"
 )
 
-func printJSON(d interface{}, idn string) {
-	v := reflect.ValueOf(d)
+func printJSON(d interface{}, idn string) { //idn string is used for indentation purpose
+	v := reflect.ValueOf(d)  //getting value of data as reflection object
 
 	switch v.Kind() {
 	case reflect.Map:
 		fmt.Printf("{ (type : %v, kind : %v)", v.Type(), v.Kind())
 		for _, k := range v.MapKeys() {
 			fmt.Printf("\n%v\t%v : ", idn, k)
-			printJSON(v.MapIndex(k).Interface(), idn+"\t")
+			printJSON(v.MapIndex(k).Interface(), idn+"\t")	//Interface method converts the reflect.Value into an interface{},
 		}
 		fmt.Printf("\n    %v}", idn)
 	case reflect.Slice:
@@ -22,7 +22,6 @@ func printJSON(d interface{}, idn string) {
 		for i := 0; i < v.Len(); i++ {
 			fmt.Printf("\n%v\t%v : ", idn, i)
 			printJSON(v.Index(i).Interface(), idn+"\t")
-
 		}
 		fmt.Printf("\n    %v]", idn)
 	default:
@@ -60,8 +59,8 @@ func main() {
 		"str_text" : ["one","two"],
 		"int_text" : [1,3,4]
 	}`
-	var mp interface{}
-	err := json.Unmarshal([]byte(inp), &mp)
+	var mp interface{}	//empty interface can hold values of any type because it has no methods
+	err := json.Unmarshal([]byte(inp), &mp) // decode JSON data into interface{}
 
 	if err != nil {
 		panic(err)
